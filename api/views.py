@@ -4,7 +4,7 @@ from .models import Assignment, Submission, User
 from .serializers import AssignmentSerializer, SubmissionSerializer, UserSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from .permissions import IsTeacher
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -18,7 +18,7 @@ class ProfileView(generics.RetrieveAPIView):
 
 class AssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = AssignmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsTeacher]
 
     def get_queryset(self):
         return Assignment.objects.filter(teacher=self.request.user)
@@ -28,7 +28,7 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
 class SubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = SubmissionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsTeacher]
 
     def get_queryset(self):
         return Submission.objects.filter(assignment__teacher=self.request.user)
