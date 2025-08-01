@@ -4,7 +4,7 @@ from .models import Assignment, Submission, User
 from .serializers import AssignmentSerializer, SubmissionSerializer, UserSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .permissions import IsTeacher
+from .permissions import IsTeacher , IsStudent
 
 
 
@@ -36,5 +36,32 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Submission.objects.filter(assignment__teacher=self.request.user)
+    @action(detail=True, methods=['post'])
+    def grade(self, request, pk=None):
+        submission = self.get_object()
+        grade = request.data.get('grade')
+        if not grade:
+            return Response({'error': 'Grade is required'}, status=400)
+        submission.grade = grade
+        submission.save()
+        return Response({'message': 'Submission graded'})
 
-    
+
+
+class StudentSubmissionViewSet(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get_queryset(self):
+        return Submission.objects.filter(student=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
+
+
+
+
+class AssignmentListView(generics.ListAPIView):
+    serializer_class = AssignmentSerializer
+    permission_classes = [IsAuthenticated, IsStudent]
+    queryset = Assignment.objects.all()
