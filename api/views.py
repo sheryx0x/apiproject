@@ -36,16 +36,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Submission.objects.filter(assignment__teacher=self.request.user)
-    @action(detail=True, methods=['post'])
-    def grade(self, request, pk=None):
-        submission = self.get_object()
-        grade = request.data.get('grade')
-        if not grade:
-            return Response({'error': 'Grade is required'}, status=400)
-        submission.grade = grade
-        submission.save()
-        return Response({'message': 'Submission graded'})
-
+    
 
 
 class StudentSubmissionViewSet(viewsets.ModelViewSet):

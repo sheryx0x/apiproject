@@ -33,9 +33,21 @@ class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = '__all__'
-        read_only_fields = ['student', 'grade'] 
+        read_only_fields = ['student']
 
     def validate_answer(self, value):
         if not value.strip():
             raise serializers.ValidationError("Answer cannot be empty.")
         return value
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if user.role == 'teacher':
+            instance.grade = validated_data.get('grade', instance.grade)
+
+        
+        if user.role == 'student':
+            instance.answer = validated_data.get('answer', instance.answer)
+
+        instance.save()
+        return instance
