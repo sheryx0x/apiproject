@@ -1,0 +1,549 @@
+{
+	"info": {
+		"_postman_id": "19051656-4fed-439b-a3f4-1a269aaebcf4",
+		"name": "api_project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44580515",
+		"_collection_link": "https://shehreyar-9606308.postman.co/workspace/f179de07-366c-4538-8e80-19cc90f82c8e/collection/44580515-19051656-4fed-439b-a3f4-1a269aaebcf4?action=share&source=collection_link&creator=44580515"
+	},
+	"item": [
+		{
+			"name": "teacher",
+			"item": [
+				{
+					"name": "register user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"username\": \"teach99\", \r\n\"password\": \"teachpass123\", \r\n\"email\": \"teach99@example.com\", \r\n\"role\": \"teacher\" }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/register/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"register",
+								""
+							]
+						},
+						"description": "Register new user (student or teacher)"
+					},
+					"response": []
+				},
+				{
+					"name": "login user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"username\": \"teach99\", \"password\": \"teachpass123\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login",
+								""
+							]
+						},
+						"description": "Login and get access/refresh"
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"refresh\": \"<refresh_token>\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/token/refresh/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"token",
+								"refresh",
+								""
+							]
+						},
+						"description": "Get new access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "get profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"profile",
+								""
+							]
+						},
+						"description": "Get logged-in teacher profile"
+					},
+					"response": []
+				},
+				{
+					"name": "list assignments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/assignments/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"assignments",
+								""
+							]
+						},
+						"description": "List all assignments by this teacher"
+					},
+					"response": []
+				},
+				{
+					"name": "create assignment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"title\": \"Biology Quiz\", \"description\": \"Answer questions 1-5\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/assignments/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"assignments",
+								""
+							]
+						},
+						"description": "Create a new assignment"
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Assignment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/assignments/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"assignments",
+								"id",
+								""
+							]
+						},
+						"description": "Get details of a specific assignment"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"title\": \"Updated Biology Quiz\", \"description\": \"New question set\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/assignments/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"assignments",
+								"id",
+								""
+							]
+						},
+						"description": "Update assignment"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/assignments/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"assignments",
+								"id",
+								""
+							]
+						},
+						"description": "Delete Assignment"
+					},
+					"response": []
+				},
+				{
+					"name": "List Submissions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/submissions/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"submissions",
+								""
+							]
+						},
+						"description": "| List all submissions to teacher's assignments |"
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Submission",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/submissions/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"submissions",
+								"id",
+								""
+							]
+						},
+						"description": "Get details of a submission"
+					},
+					"response": []
+				},
+				{
+					"name": "Grade Submission",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8000/submissions/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"submissions",
+								"id",
+								""
+							]
+						},
+						"description": "Update grade of a submission"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "student",
+			"item": [
+				{
+					"name": "register student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"username\": \"student1\", \r\n\"password\": \"pass123xyz\", \r\n\"email\": \"student1@example.com\", \r\n\"role\": \"student\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/register/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"register",
+								""
+							]
+						},
+						"description": "Create a student account"
+					},
+					"response": []
+				},
+				{
+					"name": "login user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"username\": \"student1\", \"password\": \"pass123xyz\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"login",
+								""
+							]
+						},
+						"description": "Login and get JWT tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"refresh\": \"<refresh_token>\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/token/refresh/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"token",
+								"refresh",
+								""
+							]
+						},
+						"description": "Get new access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "get profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"profile",
+								""
+							]
+						},
+						"description": "Get logged-in student profile"
+					},
+					"response": []
+				},
+				{
+					"name": "List Assignments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/student/assignments/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"student",
+								"assignments",
+								""
+							]
+						},
+						"description": "List assignments assigned to student"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Assignment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"assignment\": 1, \"answer\": \"My solution\" }"
+						},
+						"url": {
+							"raw": "http://localhost:8000/student/submissions/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"student",
+								"submissions",
+								""
+							]
+						},
+						"description": "Submit response to assignment"
+					},
+					"response": []
+				},
+				{
+					"name": "List Own Submissions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/student/submissions/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"student",
+								"submissions",
+								""
+							]
+						},
+						"description": "List student's own submissions"
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Own Submission",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/student/submissions/id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"student",
+								"submissions",
+								"id",
+								""
+							]
+						},
+						"description": "Get details of own submission"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
