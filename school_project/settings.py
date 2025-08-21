@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.BlockPUTRequestsMiddleware',
 ]
 
 ROOT_URLCONF = 'school_project.urls'
@@ -123,11 +124,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+from datetime import timedelta
 
 AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
+    'ACCESS_TOKEN_LIFETIME':
+        timedelta(minutes = 50),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
