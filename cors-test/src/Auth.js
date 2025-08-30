@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API_URL = "http://18.232.65.45:8000"; // your EC2 backend URL
+const API_URL = "http://18.232.65.45"; // your EC2 backend URL
 
 export default function Auth() {
   const [username, setUsername] = useState("");
