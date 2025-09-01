@@ -1,26 +1,44 @@
-from rest_framework import viewsets, generics
+from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated
-from .models import Assignment, Submission, User
-from .serializers import AssignmentSerializer, SubmissionSerializer, UserSerializer, RegisterSerializer
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from .permissions import IsTeacher , IsStudent
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+from .models import Assignment, Submission, User
+from .serializers import (AssignmentSerializer,SubmissionSerializer,UserSerializer,RegisterSerializer)
+from .permissions import IsTeacher, IsStudent
 
 
-
-
-class RegisterView(generics.CreateAPIView):
+class UserViewSet(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  GenericViewSet):
     queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-
-class ProfileView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
-    def get_object(self):
-        return self.request.user
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def profile(self, request):
+        """Return the authenticated user's profile (no ID required)."""
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
 
-class AssignmentViewSet(viewsets.ModelViewSet):
+    @action(detail=False, methods=["post"], url_path="register", permission_classes=[])
+    def register(self, request):
+        """Public endpoint for user registration."""
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserSerializer(user).data)
+
+    
+    
+
+
+
+class AssignmentViewSet(mixins.CreateModelMixin,
+                        mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin,
+                        GenericViewSet):
     serializer_class = AssignmentSerializer
     permission_classes = [IsAuthenticated, IsTeacher]
 
@@ -30,16 +48,25 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)
 
-class SubmissionViewSet(viewsets.ModelViewSet):
+
+class SubmissionViewSet(mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin,
+                        GenericViewSet):
     serializer_class = SubmissionSerializer
     permission_classes = [IsAuthenticated, IsTeacher]
 
     def get_queryset(self):
         return Submission.objects.filter(assignment__teacher=self.request.user)
-    
 
 
-class StudentSubmissionViewSet(viewsets.ModelViewSet):
+class StudentSubmissionViewSet(mixins.CreateModelMixin,
+                               mixins.ListModelMixin,
+                               mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin,
+                               mixins.DestroyModelMixin,
+                               GenericViewSet):
     serializer_class = SubmissionSerializer
     permission_classes = [IsAuthenticated, IsStudent]
 
@@ -50,9 +77,9 @@ class StudentSubmissionViewSet(viewsets.ModelViewSet):
         serializer.save(student=self.request.user)
 
 
-
-
 class AssignmentListView(generics.ListAPIView):
     serializer_class = AssignmentSerializer
     permission_classes = [IsAuthenticated, IsStudent]
-    queryset = Assignment.objects.all()
+
+    def get_queryset(self):
+        return Assignment.objects.all()
