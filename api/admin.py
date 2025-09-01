@@ -1,19 +1,30 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Assignment, Submission
+from .models import User , Assignment , Submission
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ("id", "username", "email", "is_teacher", "is_student", "is_staff")
-    list_filter = ("is_teacher", "is_student", "is_staff", "is_active")
+    list_display = ("id", "username", "email", "role", "is_staff", "is_active")
+    list_filter = ("role", "is_staff", "is_active")
     search_fields = ("username", "email")
     ordering = ("id",)
+
     fieldsets = (
-        (None, {"fields": ("username", "email", "password")}),
-        ("Roles", {"fields": ("is_teacher", "is_student")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
+        (None, {"fields": ("username", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
+        ("Role", {"fields": ("role",)}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
+
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("username", "email", "password1", "password2", "role", "is_staff", "is_active"),
+        }),
+    )
+
     
     
 admin.site.register(Assignment)
