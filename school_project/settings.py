@@ -9,6 +9,9 @@ from pathlib import Path
 from datetime import timedelta
 
 
+
+
+
 # Base dir
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,6 +73,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "school_project.wsgi.application"
+
+
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'memory://'  
+
 
 # Database
 # Example: for PostgreSQL set DATABASE_URL in .env: postgres://USER:PASS@HOST:PORT/NAME

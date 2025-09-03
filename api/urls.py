@@ -8,6 +8,8 @@ from .views import (
     AssignmentListView,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import PDFGenerateView
+
 
 router = DefaultRouter()
 router.register('users', UserViewSet, basename='user')
@@ -19,5 +21,7 @@ urlpatterns = [
     path('student/assignments/', AssignmentListView.as_view(), name='student-assignments'),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('generate-pdf/', PDFGenerateView.as_view(), name='generate-pdf'),
+
     path('', include(router.urls)),
 ]

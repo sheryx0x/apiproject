@@ -6,6 +6,11 @@ from rest_framework.viewsets import GenericViewSet
 from .models import Assignment, Submission, User
 from .serializers import (AssignmentSerializer,SubmissionSerializer,UserSerializer,RegisterSerializer)
 from .permissions import IsTeacher, IsStudent
+from django.http import FileResponse, Http404
+from .tasks import generate_pdf_task
+import os
+from rest_framework.views import APIView
+
 
 
 class UserViewSet(mixins.CreateModelMixin,
@@ -83,3 +88,21 @@ class AssignmentListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Assignment.objects.all()
+    
+    
+    
+class PDFGenerateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf")  # Match the task path
+
+        if not os.path.exists(output_path):
+            generate_pdf_task.delay(user.id)
+            return Response({"detail": "The PDF is generating please wait 1 minute"}, status=202)
+
+        try:
+            return FileResponse(open(output_path, 'rb'), content_type='application/pdf', filename='report.pdf')
+        except FileNotFoundError:
+            raise Http404("PDF file not found.")
