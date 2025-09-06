@@ -96,7 +96,7 @@ class PDFGenerateView(APIView):
 
     def get(self, request):
         user = request.user
-        output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf")  # Match the task path
+        output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf") 
 
         if not os.path.exists(output_path):
             generate_pdf_task.delay(user.id)
