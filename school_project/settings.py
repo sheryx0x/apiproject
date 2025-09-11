@@ -78,7 +78,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "school_project.wsgi.application"
 
 
-CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = False
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Make sure Redis (Memurai) is running on this port
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Store task results in Redis

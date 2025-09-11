@@ -46,3 +46,32 @@ def generate_pdf_task(user_id):
     except Exception as e:
         print(f"❌ PDF generation failed: {e}")
         raise
+
+
+def send_high_priority_pdf_task(user_id):
+    return generate_pdf_task.apply_async(
+        args=[user_id],
+        queue='high_priority',
+        routing_key='task.high',
+    )
+
+def send_low_priority_pdf_task(user_id):
+    return generate_pdf_task.apply_async(
+        args=[user_id],
+        queue='low_priority',
+        routing_key='task.low',
+    )
+
+def send_default_priority_pdf_task(user_id):
+    return generate_pdf_task.apply_async(
+        args=[user_id],
+        queue='default',
+        routing_key='task.default',
+    )
+
+
+
+@shared_task
+def simple_task():
+    print("Simple task running")
+    return "ok"

@@ -7,10 +7,10 @@ from .models import Assignment, Submission, User
 from .serializers import (AssignmentSerializer,SubmissionSerializer,UserSerializer,RegisterSerializer)
 from .permissions import IsTeacher, IsStudent
 from django.http import FileResponse, Http404
-from .tasks import generate_pdf_task
+
 import os
 from rest_framework.views import APIView
-
+from api.tasks import send_high_priority_pdf_task, send_low_priority_pdf_task, send_default_priority_pdf_task
 
 
 class UserViewSet(mixins.CreateModelMixin,
@@ -99,7 +99,8 @@ class PDFGenerateView(APIView):
         output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf") 
 
         if not os.path.exists(output_path):
-            generate_pdf_task.delay(user.id)
+            # 🔥 This sends the task to Celery queue, NOT Django!
+            send_high_priority_pdf_task(user.id)
             return Response({"detail": "The PDF is generating please wait 1 minute"}, status=202)
 
         try:
