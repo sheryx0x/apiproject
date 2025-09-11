@@ -34,6 +34,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 # Application definition
 INSTALLED_APPS = [
+    'django_celery_beat',
     'silk',
     "rest_framework",
     "api",
@@ -78,7 +79,14 @@ WSGI_APPLICATION = "school_project.wsgi.application"
 
 
 CELERY_TASK_ALWAYS_EAGER = True
-CELERY_BROKER_URL = 'memory://'  
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Make sure Redis (Memurai) is running on this port
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Store task results in Redis
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
 
 # Database
