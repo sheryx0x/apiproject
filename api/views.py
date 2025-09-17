@@ -7,7 +7,7 @@ from .models import Assignment, Submission, User
 from .serializers import (AssignmentSerializer,SubmissionSerializer,UserSerializer,RegisterSerializer)
 from .permissions import IsTeacher, IsStudent
 from django.http import FileResponse, Http404
-
+from silk.profiling.profiler import silk_profile
 import os
 from rest_framework.views import APIView
 from api.tasks import send_high_priority_pdf_task, send_low_priority_pdf_task, send_default_priority_pdf_task
@@ -95,15 +95,21 @@ class PDFGenerateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf") 
+        with silk_profile(name="Generate PDF View"):
+            user = request.user
+            output_path = os.path.join("C:\\temp", f"generated_pdf_user_{user.id}.pdf")
 
-        if not os.path.exists(output_path):
-            # 🔥 This sends the task to Celery queue, NOT Django!
-            send_high_priority_pdf_task(user.id)
-            return Response({"detail": "The PDF is generating please wait 1 minute"}, status=202)
+            if not os.path.exists(output_path):
+                if user.role == 'teacher':
+                    task = send_high_priority_pdf_task(user.id)
+                elif user.role == 'student':
+                    task = send_low_priority_pdf_task(user.id)
+                else:
+                    task = send_default_priority_pdf_task(user.id)
 
-        try:
+                return Response(
+                    {"detail": "PDF is generating", "task_id": task.id},
+                    status=202
+                )
+
             return FileResponse(open(output_path, 'rb'), content_type='application/pdf', filename='report.pdf')
-        except FileNotFoundError:
-            raise Http404("PDF file not found.")

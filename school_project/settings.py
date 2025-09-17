@@ -8,10 +8,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-
-
-
-
 # Base dir
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,21 +30,28 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 # Application definition
 INSTALLED_APPS = [
-    'django_celery_beat',
-    'silk',
-    "rest_framework",
-    "api",
+    # built-in apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # third-party
+    "silk",
+    "django_celery_beat",
+    "rest_framework",
+
+    # local apps
+    "api",
 ]
 
+# Middleware: Silk must be first so it can intercept requests correctly.
 MIDDLEWARE = [
-    'silk.middleware.SilkyMiddleware',
+    "silk.middleware.SilkyMiddleware",                      # Silk profiling
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",           # add WhiteNoise for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -77,20 +80,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "school_project.wsgi.application"
 
+# Celery (development/testing convenience)
+# NOTE: set to False in production
+CELERY_TASK_ALWAYS_EAGER = True
 
-CELERY_TASK_ALWAYS_EAGER = False
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Make sure Redis (Memurai) is running on this port
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Store task results in Redis
-
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 
 # Database
-# Example: for PostgreSQL set DATABASE_URL in .env: postgres://USER:PASS@HOST:PORT/NAME
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
@@ -100,18 +102,10 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 # Internationalization
@@ -123,14 +117,18 @@ USE_TZ = True
 # Static files
 STATIC_URL = env("STATIC_URL", default="/static/")
 STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  
 
-# Default primary key field type
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom user model
 AUTH_USER_MODEL = "api.User"
 
-# REST framework & Simple JWT
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -143,31 +141,36 @@ REST_FRAMEWORK = {
     },
 }
 
-# SIMPLE_JWT settings (read lifetimes from .env)
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env.int("ACCESS_TOKEN_MINUTES", default=50)),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("REFRESH_TOKEN_DAYS", default=7)),
     "ALGORITHM": env("JWT_ALGORITHM", default="HS256"),
-    # By default the signing key will be Django's SECRET_KEY — allow override if needed
     "SIGNING_KEY": env("JWT_SIGNING_KEY", default=SECRET_KEY),
-    # add other Simple JWT settings here if you need (ROTATE_REFRESH_TOKENS, etc.)
 }
 
 # Security hardening (only applied in production)
 if not DEBUG:
-    # Redirect HTTP to HTTPS
     SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
-
-    # Use secure cookies
     SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=True)
     CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=True)
-
-    # HTTP Strict Transport Security (HSTS)
-    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=31536000)  # 1 year
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=31536000)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True)
     SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=True)
-
-    # Other security settings
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = "DENY"
+
+# Silk settings
+
+from api.silk_utils import silk_intercept
+SILKY_INTERCEPT_FUNC = silk_intercept   
+SILKY_PYTHON_PROFILER = True
+SILKY_META = True
+
+SILKY_MAX_REQUEST_BODY_SIZE = -1
+SILKY_MAX_RESPONSE_BODY_SIZE = -1
+
+SILKY_AUTHENTICATION = False
+SILKY_AUTHORISATION = False
+
